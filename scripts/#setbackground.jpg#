@@ -1,0 +1,1 @@
+osascript -e 'tell application "Finder" set desktop picture to POSIX file ("./media/Ciu0gVVA_400x400.jpg") end tell'

@@ -3,7 +3,6 @@
   gather_facts: no
   connection: local
   vars:
-    - ssh_keys: "~/.ssh/known_hosts"
     - ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Change ssh port to 22
@@ -12,18 +11,8 @@
     - name: Change ssh user to bocal
       set_fact:
         ansible_user: bocal
-    - name: scan and register
-      command: "ssh-keyscan {{ansible_host|default(inventory_hostname)}}"
-      register: "host_keys"
+    - name: Copy SSH key
+      command: "ssh-copy-id -i ~/.ssh/id_rsa.pub {{inventory_hostname}}"
       changed_when: false
-    - file: path={{ssh_keys}} state=touch
-      run_once: true
-    - blockinfile:
-        dest: "{{ssh_keys}}"
-        marker: "# {mark} This part managed by Ansible"
-        block: |
-          {% for h in groups['all'] if hostvars[h].host_keys is defined %}
-          {{ hostvars[h].host_keys.stdout }}
-          {% endfor %}
-      run_once: true
-  
+    - name: Change desktop background of remote host
+      script: osascript {{role_path}}/scripts/setbackground.applescript
